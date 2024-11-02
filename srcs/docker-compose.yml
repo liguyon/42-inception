@@ -1,0 +1,8 @@
+services:
+  nginx:
+    container_name: inception-nginx
+    build: ./requirements/nginx
+    image: inception-nginx:1.0
+    ports:
+      - "80:80"
+    restart: on-failure
