@@ -17,5 +17,13 @@ stop:
 	docker compose -f $(COMPOSE_FILE) down
 
 .PHONY: clean
-clean:
+clean: stop
 	docker image rm inception-nginx:1.0
+
+.PHONY: re
+re: stop clean all
+
+.PHONY: logs
+logs:
+	docker compose -f $(COMPOSE_FILE) logs --follow
+	
