@@ -18,12 +18,18 @@ stop:
 
 .PHONY: clean
 clean: stop
-	docker image rm inception-nginx:1.0
+	docker image rm inception-nginx:eval
+	docker image rm inception-mariadb:eval
+	docker image rm inception-wordpress:eval
+
+.PHONY: fclean
+fclean: clean
+	docker volume rm srcs_mariadb
+	docker volume rm srcs_wordpress
 
 .PHONY: re
-re: stop clean all
+re: fclean all
 
 .PHONY: logs
 logs:
 	docker compose -f $(COMPOSE_FILE) logs --follow
-	

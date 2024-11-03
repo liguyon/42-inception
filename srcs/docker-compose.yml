@@ -1,9 +1,68 @@
 services:
+  mariadb:
+    container_name: inception-mariadb
+    build: 
+      context: ./requirements/mariadb
+    image: inception-mariadb:eval
+    env_file:
+      - .env
+    expose:
+      - 3306
+    networks:
+      - inception
+    volumes:
+      - mariadb:/var/lib/mysql
+    restart: unless-stopped
+
+  wordpress:
+    container_name: inception-wordpress
+    build: 
+      context: ./requirements/wordpress
+    image: inception-wordpress:eval
+    env_file:
+      - .env
+    expose:
+      - 9000
+    networks:
+      - inception
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+
   nginx:
     container_name: inception-nginx
-    build: ./requirements/nginx
-    image: inception-nginx:1.0
+    build: 
+      context: ./requirements/nginx
+    image: inception-nginx:eval
     ports:
       - "443:443"
-    restart: on-failure
-  
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress:/var/www/html
+    restart: unless-stopped
+
+#
+networks:
+  inception:
+    name: inception
+    driver: bridge
+
+#
+volumes:
+  wordpress:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: "/home/liguyon/data/wordpress"
+  mariadb:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: "/home/liguyon/data/mariadb"

@@ -18,12 +18,13 @@ RUN mkdir -p /etc/ssl/private /etc/ssl/certs
 COPY --from=generate-cert /var/ssl/nginx-selfsigned.key /etc/ssl/private/nginx-selfsigned.key
 COPY --from=generate-cert /var/ssl/nginx-selfsigned.crt /etc/ssl/certs/nginx-selfsigned.crt
 
-RUN apk update && apt add --no-cache nginx
+RUN apk update && apk add --no-cache nginx
 
-EXPOSE 443
+RUN adduser -S -D -u 101 -s /sbin/nologin -h /var/www -G www-data www-data
 
-RUN mkdir /var/www/html
-RUN chown -R nginx:www-data /var/www/html
+RUN mkdir -p var/www/html && \
+    chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html
 
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/http.d/default.conf
