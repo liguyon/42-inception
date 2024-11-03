@@ -8,7 +8,7 @@ done
 
 echo "[info] MariaDb up"
 
-if ! wp core is-installed $>/dev/null;
+if [ ! -f "/var/www/html/wp-config.php" ];
 then
     echo "[info] Begin WordPress installation."
     wp core download --allow-root
